@@ -79,7 +79,7 @@ export default function Page() {
 
 
   return (
-    <div className="items-center justify-center flex flex-col min-h-screen bg-white text-black">
+    <div className="items-center justify-center flex flex-col min-h-screen bg-white text-black px-8 sm:px-8">
       <h1 className="text-4xl text-center font-bold">
          Simple Quotes To Keep You Motivated
       </h1>
