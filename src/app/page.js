@@ -1,125 +1,116 @@
 "use client";
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
 
 export default function Page() {
-  const [quote, setQuote] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [darkMode, setDarkMode] = useState(false);
+  const quotes = [
+    {
+      quote: "The only way to do great work is to love what you do.",
+      author: "Steve Jobs",
+    },
+    {
+      quote: "In the middle of every difficulty lies opportunity.",
+      author: "Albert Einstein",
+    },
+    {
+      quote:
+        "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+      author: "Winston Churchill",
+    },
+    {
+      quote:
+        "Happiness is not something ready made. It comes from your own actions.",
+      author: "Dalai Lama",
+    },
+    {
+      quote: "Believe you can and you're halfway there.",
+      author: "Theodore Roosevelt",
+    },
+    {
+      quote: "Don’t watch the clock; do what it does. Keep going.",
+      author: "Sam Levenson",
+    },
+    {
+      quote:
+        "Your time is limited, so don’t waste it living someone else’s life.",
+      author: "Steve Jobs",
+    },
+    {
+      quote: "It does not matter how slowly you go as long as you do not stop.",
+      author: "Confucius",
+    },
+    {
+      quote:
+        "The future belongs to those who believe in the beauty of their dreams.",
+      author: "Eleanor Roosevelt",
+    },
+    {
+      quote: "The best way to predict your future is to create it.",
+      author: "Peter Drucker",
+    },
+  ];
 
-  // Fetch from internal API
-  const getRandomQuote = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/quote", { cache: "no-store" });
-      const data = await res.json();
-      setQuote({ text: data[0].q, author: data[0].a });
-    } catch (error) {
-      console.error("Failed to fetch quote:", error);
-      setQuote({ text: "Could not load a quote. Try again!", author: "" });
-    } finally {
-      setLoading(false);
-    }
+  const [currentQuote, setCurrentQuote] = useState(quotes[0]);
+
+  const handleNewQuote = () => {
+    const randomIndex = Math.floor(Math.random() * quotes.length);
+    setCurrentQuote(quotes[randomIndex]);
   };
 
-  useEffect(() => {
-    getRandomQuote();
-  }, []);
+   const handleShareQuote = () => {
+    const message = `“${currentQuote.text}” — ${currentQuote.author}\n\nRead more quotes here: https://qoutes-phi.vercel.app/`;
 
-  // Share functionality
-  const shareQuote = () => {
     if (navigator.share) {
-      navigator.share({
-        title: "Quote of the Day",
-        text: `${quote.text} — ${quote.author}`,
-      });
+      // ✅ If the browser supports Web Share API
+      navigator
+        .share({
+          title: "Inspirational Quote",
+          text: message,
+          url: "https://qoutes-phi.vercel.app/",
+        })
+        .then(() => console.log("Quote shared successfully"))
+        .catch((err) => console.log("Share failed:", err));
     } else {
-      navigator.clipboard.writeText(`${quote.text} — ${quote.author}`);
-      alert("Quote copied to clipboard!");
+      // ❌ Fallback for unsupported browsers
+      navigator.clipboard.writeText(message);
+      alert("Quote copied to clipboard! You can now paste and share it.");
     }
   };
+
+
 
   return (
-    <main
-      className={`flex flex-col min-h-screen items-center justify-center px-4 sm:px-6 py-10 transition-colors duration-700 ${
-        darkMode
-          ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white"
-          : "bg-gradient-to-br from-blue-50 via-white to-blue-100 text-gray-900"
-      }`}
-    >
-      {/* Header */}
-      <motion.h1
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="text-2xl sm:text-3xl md:text-4xl font-bold mb-8 text-center tracking-tight"
-      >
-        🌟 Quote of the Day
-      </motion.h1>
+    <div className="items-center justify-center flex flex-col min-h-screen bg-white text-black">
+      <h1 className="text-4xl text-center font-bold">
+         Simple Quotes To Keep You Motivated
+      </h1>
 
-      {/* Quote Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className={`w-full max-w-md sm:max-w-lg md:max-w-xl p-6 sm:p-8 rounded-2xl shadow-xl flex flex-col items-center text-center ${
-          darkMode ? "bg-gray-800" : "bg-white"
-        }`}
-      >
-        {loading ? (
-          <p className="text-gray-500 text-lg sm:text-xl">Loading quote...</p>
-        ) : (
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={quote.text}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <p className="text-lg sm:text-xl md:text-2xl font-medium mb-4 leading-relaxed">
-                “{quote.text}”
-              </p>
-              <p className="text-gray-400 text-sm sm:text-base mb-6">
-                — {quote.author}
-              </p>
-            </motion.div>
-          </AnimatePresence>
-        )}
+      <div className=" rounded-2xl shadow-2xl max-w-3xl px-5 space-y-4 sm:max-w-lg p-10 md:max-w-xl sm:p-8">
+        <p className="font-medium mb-4 leading-relaxed text-lg text-center">“{currentQuote.quote}”</p>
+        <p className="text-center text-sm">— {currentQuote.author}</p>
+        
 
-        {/* Buttons */}
-        <div className="flex flex-col sm:flex-row justify-center gap-3 w-full">
-          <button
-            onClick={getRandomQuote}
-            className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg text-sm sm:text-base hover:bg-blue-700 transition"
-          >
-            New Quote
-          </button>
+        <div className="flex sm:flex-row gap-4 justify-center mt-5">
+          <button 
+          onClick={handleNewQuote}
+          className="bg-blue-600 text-white px-4 py-1 rounded-md hover:bg-blue-500 transition cursor-pointer">
+          New Quote
+        </button>
 
-          <button
-            onClick={() => setDarkMode(!darkMode)}
-            className="w-full sm:w-auto px-4 py-2 bg-gray-300 text-gray-800 rounded-lg text-sm sm:text-base hover:bg-gray-400 transition"
-          >
-            {darkMode ? "Light Mode" : "Dark Mode"}
-          </button>
+        <button 
+        onClick={handleShareQuote}
+        className="bg-blue-600 text-white px-4 py-1 rounded-md hover:bg-blue-500 transition cursor-pointer">
+          Share
+        </button>
+      </div>
+        
+        
+        
+      </div>
 
-          <button
-            onClick={shareQuote}
-            className="w-full sm:w-auto px-4 py-2 bg-green-600 text-white rounded-lg text-sm sm:text-base hover:bg-green-700 transition"
-          >
-            Share
-          </button>
-        </div>
-      </motion.div>
 
-      {/* Footer */}
-      <footer className="mt-10 text-xs sm:text-sm text-gray-400 text-center px-2">
-        <p>
-          Built with ❤️ using{" "}
-          <span className="font-semibold">Next.js</span> &{" "}
-          <span className="font-semibold">Tailwind CSS</span>
-        </p>
-      </footer>
-    </main>
+
+
+      </div>
   );
 }
+
